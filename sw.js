@@ -1,9 +1,11 @@
 let cachelist = [];
 const info = {
-    version: "0.0.1-beta-2",
-    dev: 1,
+    version: "0.0.1-beta-8",
+    dev: 0,
     domain: "dash.wexa.top",
-    endstatic: "static.wexa.top",
+    //endstatic: "static.wexa.top",
+    //domain:"wexa.215213344.xyz",
+    //endstatic:"static.215213344.xyz",
     https: 1
 }
 const CACHE_NAME = 'Wexagonal';
@@ -66,7 +68,7 @@ const endget = async (path) => {
     let end;
     if (info.dev) {
         end = [
-            'http://localhost:9102' + path,
+            'http://localhost:9104' + path,
             'https://' + info.endstatic + path
         ]
     } else {
@@ -98,7 +100,7 @@ const endstatic = async (path) => {
     let end;
     if (info.dev) {
         end = [
-            'http://localhost:9102' + path,
+            'http://localhost:9104' + path,
             'https://' + info.endstatic + path
         ]
     } else {
