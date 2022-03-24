@@ -8,7 +8,7 @@ const info = {
     //endstatic:"static.215213344.xyz",
     https: 1
 }
-const CACHE_NAME = 'Wexagonal';
+const CACHE_NAME = `Wexagonal@${info.version}`;
 self.addEventListener('install', async function (installEvent) {
     self.skipWaiting();
     installEvent.waitUntil(
@@ -82,7 +82,6 @@ const endget = async (path) => {
     const req = new Request('https://GET' + path)
     return caches.match(req).then(async function (res) {
         if (res) {
-            //缓存
             return await res.text()
         } else {
             return lfetch(end).then(async resp => {
