@@ -1,14 +1,20 @@
 let cachelist = [];
 const info = {
-    version: "0.0.1-beta-8",
+    version: "0.0.1-beta-10",
     dev: 0,
     domain: "dash.wexa.top",
     //endstatic: "static.wexa.top",
-    //domain:"wexa.215213344.xyz",
-    //endstatic:"static.215213344.xyz",
+    //domain: "wexa.215213344.xyz",
+    //endstatic: "static.215213344.xyz",
     https: 1
 }
 const CACHE_NAME = `Wexagonal@${info.version}`;
+self.addEventListener('activate', event => {
+    event.waitUntil(
+
+        self.clients.claim()
+    );
+})
 self.addEventListener('install', async function (installEvent) {
     self.skipWaiting();
     installEvent.waitUntil(
@@ -158,10 +164,23 @@ const handle = async (req) => {
 
     if (domain === info.domain) {
         switch (q('page')) {
+            case 'update':
+                return fetch('/update.html')
+            case 'info':
+                return new Response(JSON.stringify({
+                    ok: 1,
+                    version: info.version,
+                    dev: info.dev
+                }), {
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8'
+                    }
+                })
             case 'api':
 
                 end.searchParams.set('token', await db.read('token'))
                 switch (q('action')) {
+
                     case 'edit':
                         switch (q('type')) {
                             case 'upload':
@@ -216,12 +235,6 @@ const handle = async (req) => {
                                 end.searchParams.set('config', q('config'))
                                 return fetch(end)
                         }
-                    case 'update':
-                        return endbuild(`<body><script>
-                        window.addEventListener('load', async () => {
-                            navigator.serviceWorker.register(\`/sw.js?time=\${new Date().getTime()}\`)
-                        });</script></body>
-                        `)
                     case 'img':
                         switch (q('type')) {
                             case 'upload':
@@ -406,7 +419,6 @@ const handle = async (req) => {
                                             break
                                         case 'yml':
                                             importhtml += `<script src="${codemirrorcdn}/addon/hint/show-hint.js"></script>`
-                                            importhtml += `<script src="${codemirrorcdn}/addon/hint/yaml-hint.js"></script>`
                                             importhtml += `<script src="${codemirrorcdn}/mode/yaml/yaml.js"></script>`
                                             break
                                         case 'json':

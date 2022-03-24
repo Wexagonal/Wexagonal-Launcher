@@ -1,11 +1,16 @@
+<p id="info"></p>
 <script>
+    const $ = document.querySelector.bind(document);
+    window.sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
     window.addEventListener('load', async () => {
+        let res;
+        $('#info').innerText = '尝试安装Wexagonal Launcher...';
         navigator.serviceWorker.register(`/sw.js?time=${new Date().getTime()}`)
             .then(async reg => {
-
-                setTimeout(() => {
-                    window.location.search = `?time=${new Date().getTime()}`
-                }, 1000)
+                $('#info').innerText = 'Wexagonal Launcher已安装，正在启动...';
+               setTimeout(() => {
+                   window.location.href = '/dash?page=update'
+               }, 500);
             })
     });
 </script>

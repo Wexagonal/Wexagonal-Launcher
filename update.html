@@ -1,0 +1,198 @@
+<html lang="zh-hans" dir="ltr">
+
+<head>
+    <title>Wexagonal 渐进式应用安装</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <style>
+
+        @keyframes rotate-fully {
+            0% {
+                transform: rotate(0deg)
+            }
+
+            100% {
+                transform: rotate(360deg)
+            }
+        }
+
+        @keyframes delayed-appearence {
+            0% {
+                opacity: 0
+            }
+
+            50% {
+                opacity: .9
+            }
+
+            100% {
+                opacity: 1
+            }
+        }
+
+        .fxs-splashscreen {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 8;
+            background-color: #fff;
+            display: flex;
+            flex-flow: column nowrap;
+            align-items: center;
+            -webkit-app-region: drag
+        }
+
+        .fxs-splashscreen>div {
+            display: flex;
+            justify-content: center
+        }
+
+        .fxs-splashscreen-outer-ring {
+            height: 60px
+        }
+
+        .fxs-splashscreen-mid-ring {
+            flex-grow: 1
+        }
+
+        .fxs-splashscreen-inner-ring {
+            height: 50px
+        }
+
+        .fxs-splashscreen-logo {
+            height: 180px
+        }
+
+        .fxs-splashscreen-logo>svg {
+            width: 150px;
+            height: 150px
+        }
+
+        .fxs-splashscreen-loader-container {
+            animation: delayed-appearence .5s 1.5s linear 1 forwards;
+            opacity: 0
+        }
+
+        .fxs-fabric-loading-spinner {
+            box-sizing: border-box;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border-width: 3px;
+            border-style: solid;
+            border-color: #0078d4 #c7e0f4 #c7e0f4;
+            border-image: initial;
+            animation: rotate-fully 1.3s cubic-bezier(.53, .21, .29, .67) infinite
+        }
+
+        .fxs-msftlogo>svg {
+            margin-bottom: 36px;
+            width: 99px;
+            height: 22px
+        }
+
+        @media(prefers-color-scheme:dark) {
+            .fxs-splashscreen {
+                background-color: #333
+            }
+        }
+
+        @media screen and (-ms-high-contrast:active) {
+            .fxs-splashscreen {
+                -ms-high-contrast-adjust: auto;
+                background-color: window
+            }
+
+            .fxs-splashscreen-loader-container>div::after {
+                border-color: windowText;
+                background: windowText
+            }
+        }
+
+        .fxs-extension-frame {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            border: 0;
+            height: 1px;
+            width: 1px;
+            display: none
+        }
+
+        @font-face {
+            font-family: "az_ea_font";
+            src: local("Microsoft Yahei UI"), local("Microsoft Yahei"), local("Simsun"), local("Segoe UI"), local("Segoe UI Symbol"), system-ui, -apple-system, blinkmacsystemfont, local("Roboto"), local("Oxygen"), local("Ubuntu"), local("Cantarell"), local("Open Sans"), local("Helvetica Neue"), sans-serif
+        }
+    </style>
+    
+    <style>
+        .weave-display-none1,
+        .weave-display-none2 {
+            display: none !important
+        }
+    </style>
+</head>
+
+<body>
+    <div id="web-container"></div>
+    <div class="fxs-splashscreen">
+        <div class="fxs-splashscreen-outer-ring"></div>
+        <div class="fxs-splashscreen-mid-ring"></div>
+        <div class="fxs-splashscreen-inner-ring"></div>
+        <div class="fxs-splashscreen-logo">
+            <img src="https://npm.elemecdn.com/wexagonal_icon" width="150px" height="150px">
+        </div>
+        <div class="fxs-splashscreen-loader-container fxs-splashscreen-inner-ring">
+            <div class="fxs-fabric-loading-spinner"></div>
+        </div>
+        <div class="fxs-splashscreen-mid-ring"></div>
+        <div class="fxs-msftlogo fxs-splashscreen-outer-ring">
+            <p id="info">加载文件中</p>
+        </div>
+    </div>
+    <div id="extensionIframes"></div>
+</body>
+
+<script>
+    const $ = document.querySelector.bind(document);
+    window.sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+    window.info = {
+
+    }
+    window.addEventListener('load', async () => {
+        let res;
+        $('#info').innerText = '尝试安装Wexagonal Launcher...';
+        navigator.serviceWorker.register(`/sw.js?time=${new Date().getTime()}`)
+            .then(async reg => {
+                $('#info').innerText = 'Wexagonal Launcher已安装，正在启动...';
+                while(1){
+                    res = await fetch('/dash?page=info&action=clear').then(res => res.json()).catch((e) => {return {ok:0}});
+                    window.winfo = res;
+                    if(res.ok){
+                        $('#info').innerText = `Wexagonal Launcher 版本${res.version} 已安装,尝试下载静态资源`;
+                        break;
+                    }
+                    $('#info').innerText = 'Wexagonal Launcher安装失败，正在重试...';
+                    await sleep(1000);
+                }
+                              
+                res = await fetch('https://SOURCE_CDN/list.json').then(res => res.json()).catch((e) => {return []});
+                info.all = res.length;
+                info.success = 0
+                Promise.all(res.map(async (item) => {
+                    await fetch(item).then(res => res.arrayBuffer()).then(res=>{
+                        info.success+=1
+                        $('#info').innerText = `已下载/共下载 : ${info.success}/${info.all}`;
+                    })
+                })).then(() => {
+                    $('#info').innerText = '静态资源下载完成，正在启动Wexagonal...';
+                    setTimeout(() => {
+                       window.location.href = '/dash'
+                    }, 1000);
+                });
+            })
+    });
+</script>
+
+</html>
