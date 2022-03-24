@@ -2,8 +2,8 @@ let cachelist = [];
 const info = {
     version: "0.0.1-beta-2",
     dev: 1,
-    domain: "dash.215213344.xyz",
-    endstatic: "static.215213344.xyz",
+    domain: "dash.wexa.top",
+    endstatic: "static.wexa.top",
     https: 1
 }
 const CACHE_NAME = 'Wexagonal';
