@@ -4,7 +4,6 @@
     <title>Wexagonal 渐进式应用安装</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <style>
-
         @keyframes rotate-fully {
             0% {
                 transform: rotate(0deg)
@@ -125,7 +124,7 @@
             src: local("Microsoft Yahei UI"), local("Microsoft Yahei"), local("Simsun"), local("Segoe UI"), local("Segoe UI Symbol"), system-ui, -apple-system, blinkmacsystemfont, local("Roboto"), local("Oxygen"), local("Ubuntu"), local("Cantarell"), local("Open Sans"), local("Helvetica Neue"), sans-serif
         }
     </style>
-    
+
     <style>
         .weave-display-none1,
         .weave-display-none2 {
@@ -166,30 +165,30 @@
         navigator.serviceWorker.register(`/sw.js?time=${new Date().getTime()}`)
             .then(async reg => {
                 $('#info').innerText = 'Wexagonal Launcher已安装，正在启动...';
-                while(1){
-                    res = await fetch('/dash?page=info&action=clear').then(res => res.json()).catch((e) => {return {ok:0}});
+                while (1) {
+                    res = await fetch('/dash?page=info&action=clear').then(res => res.json()).catch((e) => { return { ok: 0 } });
                     window.winfo = res;
-                    if(res.ok){
+                    if (res.ok) {
                         $('#info').innerText = `Wexagonal Launcher 版本${res.version} 已安装,尝试下载静态资源`;
                         break;
                     }
                     $('#info').innerText = 'Wexagonal Launcher安装失败，正在重试...';
                     await sleep(1000);
                 }
-                              
-                res = await fetch('https://SOURCE_CDN/list.json').then(res => res.json()).catch((e) => {return []});
+
+                res = await fetch('https://SOURCE_CDN/list.json').then(res => res.json()).catch((e) => { return [] });
                 info.all = res.length;
                 info.success = 0
                 Promise.all(res.map(async (item) => {
-                    await fetch(item).then(res => res.arrayBuffer()).then(res=>{
-                        info.success+=1
+                    await fetch(item).then(res => res.arrayBuffer()).then(res => {
+                        info.success += 1
                         $('#info').innerText = `已下载/共下载 : ${info.success}/${info.all}`;
                     })
                 })).then(() => {
                     $('#info').innerText = '静态资源下载完成，正在启动Wexagonal...';
                     setTimeout(() => {
-                       window.location.href = '/dash'
-                    }, 1000);
+                        window.location.href = "/"
+                    }, 1500);
                 });
             })
     });
