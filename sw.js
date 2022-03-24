@@ -1,6 +1,6 @@
 let cachelist = [];
 const info = {
-    version: "0.0.1-beta-10",
+    version: "0.0.1-beta-11",
     dev: 0,
     domain: "dash.wexa.top",
     //endstatic: "static.wexa.top",
@@ -165,6 +165,11 @@ const handle = async (req) => {
     if (domain === info.domain) {
         switch (q('page')) {
             case 'update':
+                if(q('action')==='clear'){
+                    caches.delete(CACHE_NAME).then(()=>{
+                        console.log('清除缓存成功')
+                    })
+                }
                 return fetch('/update.html')
             case 'info':
                 return new Response(JSON.stringify({

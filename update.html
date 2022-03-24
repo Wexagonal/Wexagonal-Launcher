@@ -189,6 +189,11 @@
                     setTimeout(() => {
                         window.location.href = "/"
                     }, 1500);
+                    setInterval(() => {
+                        $('#info').innerText = '启动失败,正在重启...';
+                        window.stop()
+                        window.location.href = "/"
+                    }, 3000);
                 });
             })
     });
