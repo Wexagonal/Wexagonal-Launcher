@@ -1,7 +1,7 @@
 <html lang="zh-hans" dir="ltr">
 
 <head>
-    <title>Wexagonal 渐进式应用安装</title>
+    <title>Wexagonal 意外退出</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <style>
         @keyframes rotate-fully {
@@ -73,16 +73,19 @@
             opacity: 0
         }
 
-        .fxs-fabric-loading-spinner {
-            box-sizing: border-box;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border-width: 3px;
-            border-style: solid;
-            border-color: #0078d4 #c7e0f4 #c7e0f4;
-            border-image: initial;
-            animation: rotate-fully 1.3s cubic-bezier(.53, .21, .29, .67) infinite
+        .fxs-fabric-error {
+          
+            font-size: 14px;
+            color: #fff;
+            background-color: #ff5252;
+            border-radius: 4px;
+            padding: 8px 16px;
+            margin-top: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: delayed-appearence .5s 1.5s linear 1 forwards;
+            opacity: 0
         }
 
         .fxs-msftlogo>svg {
@@ -143,78 +146,22 @@
             <img src="https://npm.elemecdn.com/wexagonal_icon" width="150px" height="150px">
         </div>
         <div class="fxs-splashscreen-loader-container fxs-splashscreen-inner-ring">
-            <div class="fxs-fabric-loading-spinner"></div>
+            
+            <div class="fxs-fabric-error" onclick="translateerr()">意外的退出,点击以启动语义解析.</div>
         </div>
         <div class="fxs-splashscreen-mid-ring"></div>
         <div class="fxs-msftlogo fxs-splashscreen-outer-ring">
-            <p id="info">加载文件中</p>
+            <p id="info">{{ERROR}}</p>
         </div>
     </div>
     <div id="extensionIframes"></div>
 </body>
 
 <script>
-    const $ = document.querySelector.bind(document);
-    window.sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-    const url = new URL(window.location.href);
-    window.info = {
-
+    function translateerr() {
+        var info = document.getElementById("info").innerText;
+        var url = "https://translate.wexa.top/?wd=" + info;
+        window.open(url);
     }
-    window.addEventListener('load', async () => {
-        let res;
-        if (url.searchParams.get('action') === "clear") {
-
-            $('#info').innerText = '尝试卸载Wexagonal Launcher...';
-            navigator.serviceWorker.getRegistrations().then(registrations => {
-                for (let registration of registrations) {
-
-                    $('#info').innerText = '卸载成功,五秒后重新安装...';
-                    registration.unregister();
-                }
-            });
-            await sleep(5000);
-            window.location.href = "/dash?page=update"
-        }
-        $('#info').innerText = '尝试安装Wexagonal Launcher...';
-        navigator.serviceWorker.register(`/sw.js?time=${new Date().getTime()}`)
-            .then(async reg => {
-                $('#info').innerText = 'Wexagonal Launcher已安装，正在启动...';
-                while (1) {
-                    res = await fetch('/dash?page=info&action=clear').then(res => res.json()).catch((e) => { return { ok: 0 } });
-                    window.winfo = res;
-                    if (res.ok) {
-                        $('#info').innerText = `Wexagonal Launcher 版本${res.version} 已安装,尝试下载静态资源`;
-                        break;
-                    }
-                    $('#info').innerText = 'Wexagonal Launcher安装失败，正在重试...';
-                    await sleep(1000);
-                }
-                if (res.dev) {
-                    $('#info').innerText = '以调试模式启动,不加载静态资源...';
-                    window.stop()
-                    window.location.href = "/"
-                }
-                res = await fetch('https://SOURCE_CDN/list.json').then(res => res.json()).catch((e) => { return [] });
-                info.all = res.length;
-                info.success = 0
-                Promise.all(res.map(async (item) => {
-                    await fetch(item).then(res => res.arrayBuffer()).then(res => {
-                        info.success += 1
-                        $('#info').innerText = `已下载/共下载 : ${info.success}/${info.all}`;
-                    })
-                })).then(() => {
-                    $('#info').innerText = '静态资源下载完成，正在启动Wexagonal...';
-                    setTimeout(() => {
-                        window.location.href = "/"
-                    }, 1500);
-                    setInterval(() => {
-                        $('#info').innerText = '启动失败,正在重启...';
-                        window.stop()
-                        window.location.href = "/"
-                    }, 3000);
-                });
-            })
-    });
 </script>
-
 </html>

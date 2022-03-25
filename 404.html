@@ -4,10 +4,10 @@
     window.sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
     window.addEventListener('load', async () => {
         let res;
-        $('#info').innerText = '尝试安装Wexagonal Launcher...';
+        $('#info').innerText = '尝试第一次激活Wexagonal Launcher...';
         navigator.serviceWorker.register(`/sw.js?time=${new Date().getTime()}`)
             .then(async reg => {
-                $('#info').innerText = 'Wexagonal Launcher已安装，正在启动...';
+                $('#info').innerText = 'Wexagonal Launcher已激活，正在开始安装...';
                setTimeout(() => {
                    window.location.href = '/dash?page=update'
                }, 500);
