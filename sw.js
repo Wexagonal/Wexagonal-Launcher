@@ -1,6 +1,6 @@
 let cachelist = [];
 const info = {
-    version: "0.0.1-beta-13",
+    version: "0.0.1-beta-14",
     dev: 0,
     domain: "dash.wexa.top",
     //endstatic: "static.wexa.top",
@@ -9,6 +9,8 @@ const info = {
     https: 1
 }
 const CACHE_NAME = `Wexagonal@${info.version}`;
+const DB_CACHE = "WexagonalDB"
+const LOG_CACHE = "WexagonalLOG"
 self.addEventListener('activate', event => {
     event.waitUntil(
         self.clients.claim()
@@ -34,33 +36,37 @@ self.addEventListener('fetch', event => {
 self.db = {
     read: (key) => {
         return new Promise((resolve, reject) => {
-            caches.match(new Request(`https://LOCALCACHE/${encodeURIComponent(key)}`)).then(function (res) {
-                res.text().then(text => resolve(text))
-            }).catch(() => {
-                resolve(null)
+            caches.open(DB_CACHE).then(function (cache) {
+                cache.match(new Request(`https://LOCALCACHE/${encodeURIComponent(key)}`)).then(function (res) {
+                    res.text().then(text => resolve(text))
+                }).catch(() => {
+                    resolve(null)
+                })
             })
         })
     },
     read_arrayBuffer: (key) => {
         return new Promise((resolve, reject) => {
-            caches.match(new Request(`https://LOCALCACHE/${encodeURIComponent(key)}`)).then(function (res) {
-                res.arrayBuffer().then(aB => resolve(aB))
-            }).catch(() => {
-                resolve(null)
+            caches.open(DB_CACHE).then(function (cache) {
+                cache.match(new Request(`https://LOCALCACHE/${encodeURIComponent(key)}`)).then(function (res) {
+                    res.arrayBuffer().then(text => resolve(text))
+                }).catch(() => {
+                    resolve(null)
+                })
             })
         })
     },
     write: (key, value) => {
         return new Promise((resolve, reject) => {
-            caches.open(CACHE_NAME).then(function (cache) {
-                cache.put(new Request(`https://LOCALCACHE/${encodeURIComponent(key)}`), new Response(value));
-                resolve()
-            }).catch(() => {
-                reject()
+            caches.open(DB_CACHE).then(function (cache) {
+                cache.put(new Request(`https://LOCALCACHE/${encodeURIComponent(key)}`), new Response(value)).then(function () {
+                    resolve()
+                })
             })
         })
     }
 }
+
 const endbuild = async (res) => {
     return new Response(res, {
         headers: {
@@ -175,7 +181,13 @@ const handle = async (req) => {
 
                     end.searchParams.set('token', await db.read('token'))
                     switch (q('action')) {
-
+                        case 'log':
+                            end.searchParams.set('action', 'log')
+                            end.searchParams.set('type', 'wexa')
+                            end.searchParams.set('nodata', '1')
+                            //end.searchParams.set('start', (new Date().getTime() - 1000 * 60 * 60 * 24 * 5))
+                            //end.searchParams.set('end',new Date().getTime())
+                            return fetch(end)
                         case 'edit':
                             switch (q('type')) {
                                 case 'upload':
@@ -272,7 +284,6 @@ const handle = async (req) => {
                                                         ...imgConfig.headers
                                                     }
                                                 })).json()
-                                                console.log(download_res)
                                                 for (var q in imgConfig.path) {
 
                                                     const path_list = imgConfig.path[q].split('.')
@@ -519,6 +530,47 @@ const handle = async (req) => {
                             )
 
 
+                        case 'log':
+                            end.searchParams.set('type', 'wexa')
+                            end.searchParams.set('action', 'log')
+                            end.searchParams.set('nodata', '0')
+                            end.searchParams.set('start', new Date().getTime() - 1000 * 60 * 60 * 24 * 30)
+                            end.searchParams.set('end', new Date().getTime())
+                            res = await (await fetch(end)).json()
+                            if (!res.ok) { throw '获取日志失败,请检查是否登陆已过期!' }
+                            res = res.data.sort((a, b) => a.time - b.time)
+                            return endbuild((await endget('/pages/dash/main.html'))
+                                .replace('<!--content-->', await endget('/pages/dash/content/log.html'))
+                                .replace('<!--API_LOGS_DATA-->', (() => {
+                                    let table = ''
+                                    for (let i of res) {
+                                        console.log(res)
+                                        table += `
+                                        <tr>
+                            <td>
+                               ${i.type || "无"}
+                            </td>
+                            <td>
+                                ${i.action || '无'}
+                            </td>
+                            <td class="align-middle text-center">
+                            <span class="badge badge-sm bg-gradient-success">
+                            ${new Date(i.time).toLocaleString()} 
+                            </span>
+                                
+                            </td>
+                            <td class="align-middle text-center text-sm">
+                            <span class="text-secondary text-xs font-weight-bold">${i.data || '无'}</span>
+                            </td>
+                            
+                        </tr>`
+                                    }
+                                    return table
+                                })())
+                            )
+
+
+
 
                         case 'hexo':
                             [res1, res2, res3, res4, res5] = await Promise.all([
@@ -618,11 +670,16 @@ const handle = async (req) => {
                             )
                         case 'home':
                             end.searchParams.set('type', 'info')
+                            const dely_1 = new Date().getTime()
                             res = (await (await fetch(end)).json())
+                            const delay = new Date().getTime() - dely_1
                             return endbuild((await endget('/pages/dash/main.html'))
                                 .replace('<!--content-->', await endget('/pages/dash/content/home.html'))
                                 .replace('<!--WEXAGONAL_FRONT_VERSION-->', info.version)
                                 .replace('<!--WEXAGONAL_BACKEND_VERSION-->', res.version)
+                                .replace('<!--WEXAGONAL_BACKEND_DELAY-->', `<span style="${
+                                    delay > 1000 ? 'color:red' : 'color:green'
+                                }">${delay}ms</span>`)
 
                             )
                         case 'config':
