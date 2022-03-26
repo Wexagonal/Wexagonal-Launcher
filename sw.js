@@ -1,6 +1,6 @@
 let cachelist = [];
 const info = {
-    version: "0.0.1-beta-14",
+    version: "0.0.1-beta-15",
     dev: 0,
     domain: "dash.wexa.top",
     //endstatic: "static.wexa.top",
@@ -156,6 +156,10 @@ const handle = async (req) => {
         const urlStr = urlObj.pathname;
         const domain = urlObj.hostname;
         const path = urlObj.pathname;
+        console.log(path)
+        if(path === '/manifest.json'){
+            return endstatic('/manifest.json')
+        }
         const q = k => { return urlObj.searchParams.get(k) };
 
         if (domain === info.domain) {
