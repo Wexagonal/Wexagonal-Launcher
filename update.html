@@ -167,10 +167,10 @@
             $('#info').innerText = '尝试卸载Wexagonal Launcher...';
             navigator.serviceWorker.getRegistrations().then(registrations => {
                 for (let registration of registrations) {
-
-                    $('#info').innerText = '卸载成功,五秒后重新安装...';
                     registration.unregister();
+                    
                 }
+                $('#info').innerText = '卸载成功,五秒后重新安装...';
             });
             await sleep(5000);
             window.location.href = "/dash?page=update"

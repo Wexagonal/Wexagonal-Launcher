@@ -74,10 +74,23 @@
         }
 
         .fxs-fabric-error {
-          
+
             font-size: 14px;
             color: #fff;
             background-color: #ff5252;
+            border-radius: 4px;
+            padding: 8px 16px;
+            margin-top: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: delayed-appearence .5s 1.5s linear 1 forwards;
+            opacity: 0
+        }
+        .fxs-fabric-warning {
+            font-size: 14px;
+            color: #fff;
+            background-color: #ff9800;
             border-radius: 4px;
             padding: 8px 16px;
             margin-top: 8px;
@@ -142,12 +155,12 @@
         <div class="fxs-splashscreen-outer-ring"></div>
         <div class="fxs-splashscreen-mid-ring"></div>
         <div class="fxs-splashscreen-inner-ring"></div>
-        <div class="fxs-splashscreen-logo">
+        <div class="fxs-splashscreen-logo" onclick="translateerr()">
             <img src="https://npm.elemecdn.com/wexagonal_icon" width="150px" height="150px">
         </div>
         <div class="fxs-splashscreen-loader-container fxs-splashscreen-inner-ring">
-            
-            <div class="fxs-fabric-error" onclick="translateerr()">意外的退出,点击以启动语义解析.</div>
+
+            <div class="fxs-fabric-error" onclick="resetwexa()">意外的退出,点击以重启Wexa.</div></br>
         </div>
         <div class="fxs-splashscreen-mid-ring"></div>
         <div class="fxs-msftlogo fxs-splashscreen-outer-ring">
@@ -163,5 +176,17 @@
         var url = "https://translate.wexa.top/?wd=" + info;
         window.open(url);
     }
+    function resetwexa() {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+            for (let registration of registrations) {
+                registration.unregister();
+            }
+        });
+        toindex()
+    }
+    function toindex() {
+        window.location.href = "/";
+    }
 </script>
+
 </html>
