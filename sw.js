@@ -1,7 +1,7 @@
 let cachelist = [];
 const info = {
     version: "0.0.1-beta-15",
-    dev: 0,
+    dev: 1,
     domain: "dash.wexa.top",
     //endstatic: "static.wexa.top",
     //domain: "wexa.215213344.xyz",
@@ -100,18 +100,18 @@ const endstatic = async (path) => {
         ]
     }
     const req = new Request('https://STATIC' + path)
-    return caches.match(req).then(function (res) {
-        if (res) {
-            return res
-        } else {
-            return lfetch(end).then(resp => {
-                respp = resp.clone()
-                caches.open(CACHE_NAME).then(function (cache) {
+    return caches.open(CACHE_NAME).then(function (cache) {
+        return cache.match(req).then(function (res) {
+            if (!!res && !!res.ok) {
+                return res
+            } else {
+                return lfetch(end).then(resp => {
+                    const respp = resp.clone()
                     cache.put(req, resp);
+                    return respp
                 })
-                return respp
-            })
-        }
+            }
+        })
     })
 }
 
@@ -122,20 +122,20 @@ const endnpm = async (path) => {
     //return lfetch(end)
     //缓存
     const req = new Request('https://NPM' + path)
-    return caches.match(req).then(function (res) {
-        if (res) {
-            return res
-        } else {
-            return lfetch(end).then(resp => {
-                respp = resp.clone()
-                caches.open(CACHE_NAME).then(function (cache) {
+    return caches.open(CACHE_NAME).then(function (cache) {
+        return cache.match(req).then(function (res) {
+            if (!!res && !!res.ok) {
+                return res
+            } else {
+                return lfetch(end).then(resp => {
+                    const respp = resp.clone()
                     cache.put(req, resp);
+                    return respp
                 })
-                return respp
-            })
+            }
         }
-    }
-    )
+        )
+    })
 }
 
 const handle_error = async (e) => {
@@ -157,7 +157,7 @@ const handle = async (req) => {
         const domain = urlObj.hostname;
         const path = urlObj.pathname;
         console.log(path)
-        if(path === '/manifest.json'){
+        if (path === '/manifest.json') {
             return endstatic('/manifest.json')
         }
         const q = k => { return urlObj.searchParams.get(k) };
@@ -681,9 +681,8 @@ const handle = async (req) => {
                                 .replace('<!--content-->', await endget('/pages/dash/content/home.html'))
                                 .replace('<!--WEXAGONAL_FRONT_VERSION-->', info.version)
                                 .replace('<!--WEXAGONAL_BACKEND_VERSION-->', res.version)
-                                .replace('<!--WEXAGONAL_BACKEND_DELAY-->', `<span style="${
-                                    delay > 1000 ? 'color:red' : 'color:green'
-                                }">${delay}ms</span>`)
+                                .replace('<!--WEXAGONAL_BACKEND_DELAY-->', `<span style="${delay > 1000 ? 'color:red' : 'color:green'
+                                    }">${delay}ms</span>`)
 
                             )
                         case 'config':
