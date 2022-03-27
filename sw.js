@@ -1,6 +1,6 @@
 let cachelist = [];
 const info = {
-    version: "0.0.1-beta-16",
+    version: "0.0.1-beta-17",
     dev: 0,
     domain: "dash.wexa.top",
     //endstatic: "static.wexa.top",
@@ -10,7 +10,6 @@ const info = {
 }
 const CACHE_NAME = `Wexagonal@${info.version}`;
 const DB_CACHE = "WexagonalDB"
-const LOG_CACHE = "WexagonalLOG"
 self.addEventListener('activate', event => {
     event.waitUntil(
         self.clients.claim()
