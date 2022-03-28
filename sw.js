@@ -1,6 +1,9 @@
+const guuid = () => {
+
+}
 let cachelist = [];
 const info = {
-    version: "0.0.1-beta-17",
+    version: "0.0.1-beta-19",
     dev: 0,
     domain: "dash.wexa.top",
     //endstatic: "static.wexa.top",
@@ -336,7 +339,7 @@ const handle = async (req) => {
                             if (!res.ok) return Response.redirect(`/dash?page=login&error=1`)
                             res = res.data
                             return endbuild((await endget('/pages/dash/main.html'))
-                                .replace('<!--content-->', await endget('/pages/dash/content/img.html'))
+                                .replace('{{CONTENT}}', await endget('/pages/dash/content/img.html'))
                                 .replace('<!--API_IMG_LIST-->', (() => {
                                     let imglisthtml = ''
                                     for (var i in res.data) {
@@ -368,14 +371,14 @@ const handle = async (req) => {
                                     }
                                     return imglisthtml
                                 })())
-                                .replace('<!--API_LIST_COUNT-->', Object.keys(res.data).length)
+                                .replace('{{API_LIST_COUNT}}', Object.keys(res.data).length)
                             )
 
                         case 'file':
                             if (!q('path')) return Response.redirect('/dash?page=dash&type=file&path=/')
                             if (q('action') === 'edit') {
                                 return endbuild((await endget('/pages/dash/main.html'))
-                                    .replace('<!--content-->', await endget('/pages/dash/content/file_edit.html'))
+                                    .replace('{{CONTENT}}', await endget('/pages/dash/content/file_edit.html'))
                                     .replace('<!--CODEMIRROR_MODE-->', ((ext) => {
                                         switch (ext) {
                                             case 'js':
@@ -447,7 +450,7 @@ const handle = async (req) => {
                             }
                             if (q('action') === 'preview') {
                                 return endbuild((await endget('/pages/dash/main.html'))
-                                    .replace('<!--content-->', await endget('/pages/dash/content/file_preview.html'))
+                                    .replace('{{CONTENT}}', await endget('/pages/dash/content/file_preview.html'))
                                     .replace('<!--PREVIEW_HTML-->', (() => {
                                         const url = q('download_url')
                                         switch (q('ptype')) {
@@ -467,7 +470,7 @@ const handle = async (req) => {
 
                             }
                             return endbuild((await endget('/pages/dash/main.html'))
-                                .replace('<!--content-->', await endget('/pages/dash/content/file.html'))
+                                .replace('{{CONTENT}}', await endget('/pages/dash/content/file.html'))
                                 .replace('<!--API_LIST_BODY-->', await (async () => {
                                     end.searchParams.set('type', 'file')
                                     end.searchParams.set('action', 'list')
@@ -543,7 +546,7 @@ const handle = async (req) => {
                             if (!res.ok) { throw '获取日志失败,请检查是否登陆已过期!' }
                             res = res.data.sort((a, b) => a.time - b.time)
                             return endbuild((await endget('/pages/dash/main.html'))
-                                .replace('<!--content-->', await endget('/pages/dash/content/log.html'))
+                                .replace('{{CONTENT}}', await endget('/pages/dash/content/log.html'))
                                 .replace('<!--API_LOGS_DATA-->', (() => {
                                     let table = ''
                                     for (let i of res) {
@@ -617,7 +620,7 @@ const handle = async (req) => {
 
 
                             return endbuild((await endget('/pages/dash/main.html'))
-                                .replace('<!--content-->', await endget('/pages/dash/content/hexo.html'))
+                                .replace('{{CONTENT}}', await endget('/pages/dash/content/hexo.html'))
                                 .replace('<!--API_POST_COUNT-->', res1.ok ? res1.data : 'ERROR')
                                 .replace('<!--API_DRAFT_COUNT-->', res2.ok ? res2.data : 'ERROR')
                                 .replace('<!--API_CI_STATUS-->', res3.ok ? ((data) => {
@@ -677,7 +680,7 @@ const handle = async (req) => {
                             res = (await (await fetch(end)).json())
                             const delay = new Date().getTime() - dely_1
                             return endbuild((await endget('/pages/dash/main.html'))
-                                .replace('<!--content-->', await endget('/pages/dash/content/home.html'))
+                                .replace('{{CONTENT}}', await endget('/pages/dash/content/home.html'))
                                 .replace('<!--WEXAGONAL_FRONT_VERSION-->', info.version)
                                 .replace('<!--WEXAGONAL_BACKEND_VERSION-->', res.version)
                                 .replace('<!--WEXAGONAL_BACKEND_DELAY-->', `<span style="${delay > 1000 ? 'color:red' : 'color:green'
@@ -686,14 +689,14 @@ const handle = async (req) => {
                             )
                         case 'config':
                             return endbuild((await endget('/pages/dash/main.html'))
-                                .replace('<!--content-->', await endget('/pages/dash/content/config.html'))
+                                .replace('{{CONTENT}}', await endget('/pages/dash/content/config.html'))
 
                             )
                         case 'info':
                             end.searchParams.set('type', 'info')
                             res = (await (await fetch(end)).json())
                             return endbuild((await endget('/pages/dash/main.html'))
-                                .replace('<!--content-->', await endget('/pages/dash/content/info.html'))
+                                .replace('{{CONTENT}}', await endget('/pages/dash/content/info.html'))
                                 .replace('<!--API_USER_AVATAR-->', res.user.avatar)
                                 .replace('<!--API_USER_NICKNAME-->', res.user.nickname)
                             )
@@ -709,7 +712,7 @@ const handle = async (req) => {
                                             end.searchParams.set('gettype', 'post')
                                             res = (await (await fetch(end)).json())
                                             return endbuild((await endget('/pages/dash/main.html'))
-                                                .replace('<!--content-->', await endget('/pages/dash/content/post_list.html'))
+                                                .replace('{{CONTENT}}', await endget('/pages/dash/content/post_list.html'))
                                                 .replace('<!--API_LIST_BODY-->', (() => {
                                                     //res.data为list包含所有文件名,建立table,两个列,第一个为list中所有数据
                                                     let table = ''
@@ -726,7 +729,7 @@ const handle = async (req) => {
                                             res = (await (await fetch(end)).json())
 
                                             return endbuild((await endget('/pages/dash/main.html'))
-                                                .replace('<!--content-->', await endget('/pages/dash/content/post_list.html'))
+                                                .replace('{{CONTENT}}', await endget('/pages/dash/content/post_list.html'))
                                                 .replace('<!--API_LIST_BODY-->', (() => {
                                                     let table = ''
                                                     for (let i = 0; i < res.data.length; i++) {
@@ -737,7 +740,7 @@ const handle = async (req) => {
                                             )
                                         case 'new':
                                             return endbuild((await endget('/pages/dash/main.html'))
-                                                .replace('<!--content-->', await endget('/pages/dash/content/new.html'))
+                                                .replace('{{CONTENT}}', await endget('/pages/dash/content/new.html'))
                                             )
                                         default:
                                             return Response.redirect('/dash?page=dash&type=edit&action=list&gettype=post')
@@ -745,7 +748,7 @@ const handle = async (req) => {
 
                                 case 'edit':
                                     return endbuild((await endget('/pages/dash/main.html'))
-                                        .replace('<!--content-->', await endget('/pages/dash/content/markdown_edit.html'))
+                                        .replace('{{CONTENT}}', await endget('/pages/dash/content/markdown_edit.html'))
 
                                     )
                                 default:
@@ -753,7 +756,7 @@ const handle = async (req) => {
                             }
                         case 'config':
                             return endbuild((await endget('/pages/dash/main.html'))
-                                .replace('<!--content-->', await endget('/pages/dash/content/config.html')))
+                                .replace('{{CONTENT}}', await endget('/pages/dash/content/config.html')))
 
                         default:
                             return Response.redirect('/dash?page=dash&type=home')
@@ -790,7 +793,11 @@ const handle = async (req) => {
                         case 'index':
                             return endbuild((await endget('/pages/signin/main.html')).replace('<!--SIGNIN_CONTENT-->', await endget('/pages/signin/content/install/index.html')))
                         case 'signup':
-                            return endbuild((await endget('/pages/signin/main.html')).replace('<!--SIGNIN_CONTENT-->', await endget('/pages/signin/content/install/type/signup.html')))
+                            return endbuild(
+                                (await endget('/pages/signin/main.html'))
+                                    .replace('<!--SIGNIN_CONTENT-->', await endget('/pages/signin/content/install/type/signup.html'))
+                                    .replace('{{ENDPOINT_DOMAIN}}', `${end.hostname}:${end.port ? end.port : 443}`)
+                            )
                         case 'config_img':
                             switch (q('step')) {
                                 case 'new':
