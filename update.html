@@ -193,8 +193,8 @@
                     $('#info').innerText = '以调试模式启动,不加载静态资源...';
                     window.stop()
                     window.location.href = "/"
-                }
-                res = await fetch('https://SOURCE_CDN/list.json').then(res => res.json()).catch((e) => { return [] });
+                }else{
+                    res = await fetch('https://SOURCE_CDN/list.json').then(res => res.json()).catch((e) => { return [] });
                 info.all = res.length;
                 info.success = 0
                 Promise.all(res.map(async (item) => {
@@ -213,6 +213,8 @@
                         window.location.href = "/"
                     }, 3000);
                 });
+                }
+                
             })
     });
 </script>
