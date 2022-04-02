@@ -4,11 +4,11 @@ const guuid = () => {
 let cachelist = [];
 const info = {
     version: "0.0.1-beta-20",
-    dev: 1,
-    //domain: "dash.wexa.top",
+    dev: 0,
+    domain: "dash.wexa.top",
     //endstatic: "static.wexa.top",
-    domain: "wexa.215213344.xyz",
-    endstatic: "static.215213344.xyz",
+    //domain: "wexa.215213344.xyz",
+    //endstatic: "static.215213344.xyz",
     https: 1
 }
 const CACHE_NAME = `Wexagonal@${info.version}`;
