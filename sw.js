@@ -3,7 +3,7 @@ const guuid = () => {
 }
 let cachelist = [];
 const info = {
-    version: "0.0.1-beta-20",
+    version: "0.0.1-beta-19",
     dev: 0,
     domain: "dash.wexa.top",
     //endstatic: "static.wexa.top",
