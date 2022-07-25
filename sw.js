@@ -98,7 +98,7 @@ const endstatic = async (path) => {
         ]
     } else {
         end = [
-            `https://npm.elemecdn.com/wexagonal_front@${info.version}` + path,
+            `https://unpkg.com/wexagonal_front@${info.version}` + path,
         ]
     }
     const req = new Request('https://STATIC' + path)
@@ -119,7 +119,7 @@ const endstatic = async (path) => {
 
 const endnpm = async (path) => {
     const end = [
-        'https://npm.elemecdn.com' + path
+        'https://unpkg.com' + path
     ]
     //return lfetch(end)
     //缓存
@@ -399,7 +399,7 @@ const handle = async (req) => {
                                             <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1" name="img_container">
                                                 <div class="d-block" data-src="${res.data[i].url}"
                                                 data-sub-html="<h4>${res.data[i].url.split('/').pop()}</h4> <p>在${new Date(res.data[i].time).toLocaleString()}上传</p>">
-                                                    <img src="https://npm.elemecdn.com/chenyfan-oss@1.0.0/pic/lazy.gif" data-src="${res.data[i].url}"
+                                                    <img src="https://unpkg.com/chenyfan-oss@1.0.0/pic/lazy.gif" data-src="${res.data[i].url}"
                                                         alt="alt-article-15" class="img-fluid shadow rounded-3">
                                                 </div>
                                             </div>
